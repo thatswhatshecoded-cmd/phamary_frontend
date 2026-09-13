@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "ApniPharma",
+    default: "Login | ApniPharma",
     template: "%s | ApniPharma",
   },
-  description: "A modern pharmacy experience powered by Laravel and Next.js.",
+  description: "Secure mobile OTP login for ApniPharma.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
