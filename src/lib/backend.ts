@@ -5,7 +5,7 @@ export const AUTH_COOKIE = "apnipharma_session";
 const BACKEND_API_URL = (
   process.env.BACKEND_API_URL ??
   process.env.NEXT_PUBLIC_API_URL ??
-  "http://127.0.0.1:8000/api"
+  "https://kirayacare.com/api"
 ).replace(/\/$/, "");
 
 export type BackendPayload = {

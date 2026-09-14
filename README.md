@@ -6,7 +6,7 @@ the App Router, Tailwind CSS, and ESLint.
 ## Getting started
 
 Copy the environment example and set the Laravel API URL if it differs from
-the local default:
+the configured backend:
 
 ```powershell
 Copy-Item .env.example .env.local
@@ -20,7 +20,7 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). The Laravel API defaults to
-`http://localhost:8000/api`.
+`https://kirayacare.com/api`.
 
 ## Commands
 
