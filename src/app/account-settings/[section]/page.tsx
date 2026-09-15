@@ -1,0 +1,25 @@
+import { notFound } from "next/navigation";
+import { AboutPharmacyForm } from "@/components/about-pharmacy-form";
+import { accountSections } from "@/lib/pharmacy";
+
+export default async function AccountSettingsSectionPage({
+  params,
+}: {
+  params: Promise<{ section: string }>;
+}) {
+  const { section } = await params;
+  const matched = accountSections.find((item) => item.slug === section);
+  if (!matched) notFound();
+
+  if (section === "about-pharmacy") return <AboutPharmacyForm />;
+
+  return (
+    <section className="mx-auto max-w-5xl px-5 py-10 sm:px-10 lg:px-14">
+      <p className="text-xs font-semibold uppercase tracking-[.2em] text-[#0b8fea]">Account &amp; Settings</p>
+      <h1 className="mt-3 text-3xl font-semibold text-[#063665]">{matched.label}</h1>
+      <div className="mt-8 rounded-xl border border-dashed border-[#b7d9ef] bg-[#f4faff] p-8 text-slate-600">
+        {matched.label} ka section ready hai. Iski detailed fields aur workflow agle requirement ke saath isi Laravel API architecture par add honge.
+      </div>
+    </section>
+  );
+}

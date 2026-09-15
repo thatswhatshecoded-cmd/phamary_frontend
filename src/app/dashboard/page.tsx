@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { BrandLogo } from "@/components/brand-logo";
-import { LogoutButton } from "@/components/logout-button";
+import { AppHeader } from "@/components/app-header";
 import {
   AUTH_COOKIE,
   type BackendPayload,
@@ -33,10 +32,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-dvh bg-[#f4f8fb]">
-      <header className="flex items-center justify-between bg-[#062f58] px-6 py-5 sm:px-10">
-        <BrandLogo />
-        <LogoutButton />
-      </header>
+      <AppHeader />
       <section className="mx-auto max-w-5xl px-6 py-16 sm:px-10">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0089ff]">Dashboard</p>
         <h1 className="mt-3 text-3xl font-semibold text-[#062f58]">Welcome to ApniPharma</h1>
