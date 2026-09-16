@@ -20,7 +20,24 @@ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). The Laravel API defaults to
-`https://kirayacare.com/api`.
+`http://localhost:8000/api` during local development.
+
+## Production deployment
+
+The production frontend is configured for
+[https://phamary-frontend.vercel.app](https://phamary-frontend.vercel.app), with
+server-side API requests sent to `https://kirayacare.com/api`.
+
+In Vercel, set these Production environment variables using
+`.env.production.example` as the reference:
+
+```text
+BACKEND_API_URL=https://kirayacare.com/api
+NEXT_PUBLIC_APP_URL=https://phamary-frontend.vercel.app
+```
+
+`BACKEND_API_URL` remains server-only. Browser requests use the same-origin
+Next.js route handlers, which relay authenticated requests to Laravel.
 
 ## Commands
 

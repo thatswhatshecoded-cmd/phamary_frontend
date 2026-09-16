@@ -2,10 +2,15 @@ import "server-only";
 
 export const AUTH_COOKIE = "apnipharma_session";
 
+const DEFAULT_BACKEND_API_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://kirayacare.com/api"
+    : "http://localhost:8000/api";
+
 const BACKEND_API_URL = (
   process.env.BACKEND_API_URL ??
   process.env.NEXT_PUBLIC_API_URL ??
-  "https://kirayacare.com/api"
+  DEFAULT_BACKEND_API_URL
 ).replace(/\/$/, "");
 
 export type BackendPayload = {
