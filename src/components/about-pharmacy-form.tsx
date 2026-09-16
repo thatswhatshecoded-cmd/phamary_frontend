@@ -47,6 +47,8 @@ const blankProfile: PharmacyProfile = {
   updated_at: null,
 };
 
+const GSTIN_PATTERN = /^[0-9]{2}[A-Z]{3}[ABCFGHLJPT][A-Z][0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/;
+
 function firstError(payload: PharmacyPayload): string {
   const validationError = payload.errors ? Object.values(payload.errors).flat()[0] : null;
   return validationError ?? payload.message ?? "Request complete nahi ho saki.";
@@ -98,7 +100,7 @@ function LookupField({
   onChange: (value: string) => void;
   onFetch: () => void;
 }) {
-  const label = type === "gstin" ? "GSTN" : "PAN";
+  const label = type === "gstin" ? "GSTIN" : "PAN";
   return (
     <div className="min-w-0">
       <label className="mb-2 block text-sm font-medium text-[#0758a6]" htmlFor={type}>{label}</label>
@@ -180,10 +182,15 @@ export function AboutPharmacyForm() {
   async function fetchTaxDetails(type: "gstin" | "pan") {
     const value = profile[type]?.trim() ?? "";
     const valid = type === "gstin"
-      ? /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(value)
+      ? GSTIN_PATTERN.test(value)
       : /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(value);
     if (!valid) {
-      setMessage({ text: `Valid ${type.toUpperCase()} enter karein.`, error: true });
+      setMessage({
+        text: type === "gstin"
+          ? "GSTIN format valid nahi hai. Registered GSTIN enter karein."
+          : "Valid PAN enter karein.",
+        error: true,
+      });
       return;
     }
 
@@ -256,8 +263,8 @@ export function AboutPharmacyForm() {
         <h1 className="text-[27px] font-medium text-[#0795ed]">About Pharmacy</h1>
         <span aria-hidden="true" className="text-xl">💡</span>
       </div>
-      <p className="mt-6 text-[15px] text-[#064c9c]">Get prefill pharmacy details by adding GSTN or PAN with some clicks</p>
-      <p className="mt-1 flex items-center gap-2 text-sm text-[#064c9c]"><span aria-hidden="true">●</span> You can add Personal PAN if you don&apos;t have registered GSTN.</p>
+      <p className="mt-6 text-[15px] text-[#064c9c]">Get prefill pharmacy details by adding GSTIN or PAN with some clicks</p>
+      <p className="mt-1 flex items-center gap-2 text-sm text-[#064c9c]"><span aria-hidden="true">●</span> You can add Personal PAN if you don&apos;t have a registered GSTIN.</p>
 
       {message && (
         <div role={message.error ? "alert" : "status"} className={`mt-6 rounded-lg border px-4 py-3 text-sm ${message.error ? "border-red-200 bg-red-50 text-red-700" : "border-emerald-200 bg-emerald-50 text-emerald-700"}`}>
