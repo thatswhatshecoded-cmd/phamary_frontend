@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppHeader } from "@/shared/layout/app-header";
+import { SubscriptionBanner } from "@/features/billing/components/subscription-banner";
 import {
   AUTH_COOKIE,
   type BackendPayload,
@@ -12,6 +13,12 @@ type UserData = {
   name: string | null;
   mobile_number: string;
   email: string | null;
+};
+
+type SubscriptionData = {
+  notification_type: "trial_expiring" | "plan_expiring" | "trial_expired" | "plan_expired" | null;
+  expires_at: string | null;
+  days_remaining: number;
 };
 
 export default async function DashboardPage() {
@@ -36,10 +43,17 @@ export default async function DashboardPage() {
   if (!contextResponse?.ok) redirect("/");
   const context = (await contextResponse.json()) as BackendPayload;
   if (!context.data?.current) redirect("/onboarding");
+  const current = context.data.current as { subscription?: SubscriptionData | null };
+  const subscription = current.subscription ?? null;
 
   return (
     <main className="min-h-dvh bg-[#f4f8fb]">
       <AppHeader />
+      <SubscriptionBanner
+        type={subscription?.notification_type ?? null}
+        expiresAt={subscription?.expires_at ?? null}
+        daysRemaining={subscription?.days_remaining ?? 0}
+      />
       <section className="mx-auto max-w-5xl px-6 py-16 sm:px-10">
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#0089ff]">Dashboard</p>
         <h1 className="mt-3 text-3xl font-semibold text-[#062f58]">Welcome to ApniPharma</h1>
