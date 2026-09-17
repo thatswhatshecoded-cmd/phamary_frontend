@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import type { PharmacyPayload, PharmacyProfile } from "@/lib/pharmacy";
+import type { PharmacyPayload, PharmacyProfile } from "@/features/pharmacy/types";
 
 type EditableKey =
   | "pharmacy_name"

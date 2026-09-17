@@ -1,8 +1,8 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { AccountSettingsNavigation } from "@/components/account-settings-nav";
-import { AppHeader } from "@/components/app-header";
-import { AUTH_COOKIE, backendRequest } from "@/lib/backend";
+import { AccountSettingsNavigation } from "@/features/settings/components/account-settings-nav";
+import { AUTH_COOKIE, backendRequest } from "@/shared/api/backend";
+import { AppHeader } from "@/shared/layout/app-header";
 
 export default async function AccountSettingsLayout({ children }: { children: React.ReactNode }) {
   const token = (await cookies()).get(AUTH_COOKIE)?.value;

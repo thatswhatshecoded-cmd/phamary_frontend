@@ -107,7 +107,9 @@ export function OtpLoginForm() {
         return;
       }
 
-      router.replace("/dashboard");
+      const contextResponse = await fetch("/api/account/context");
+      const context = (await contextResponse.json()) as { success?: boolean; data?: { current?: unknown } };
+      router.replace(context.success && context.data?.current ? "/dashboard" : "/onboarding");
       router.refresh();
     } catch {
       setError("Unable to verify the OTP. Please try again.");

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import { relayAuthenticated } from "@/lib/auth-proxy";
-import { AUTH_COOKIE } from "@/lib/backend";
+import { relayAuthenticated } from "@/shared/api/auth-proxy";
+import { AUTH_COOKIE } from "@/shared/api/backend";
 
 export async function DELETE(request: Request) {
   const response = await relayAuthenticated("v1/account", {

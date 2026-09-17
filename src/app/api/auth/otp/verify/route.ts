@@ -4,7 +4,7 @@ import {
   type BackendPayload,
   backendRequest,
   backendUnavailable,
-} from "@/lib/backend";
+} from "@/shared/api/backend";
 
 export async function POST(request: Request) {
   try {

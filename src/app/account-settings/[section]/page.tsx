@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { AboutPharmacyForm } from "@/components/about-pharmacy-form";
-import { accountSections } from "@/lib/pharmacy";
+import { AboutPharmacyForm } from "@/features/pharmacy/components/about-pharmacy-form";
+import { accountSections } from "@/features/settings/config";
 
 export default async function AccountSettingsSectionPage({
   params,

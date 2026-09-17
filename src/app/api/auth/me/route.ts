@@ -4,7 +4,7 @@ import {
   backendRequest,
   backendUnavailable,
   relayJson,
-} from "@/lib/backend";
+} from "@/shared/api/backend";
 
 export async function GET() {
   const token = (await cookies()).get(AUTH_COOKIE)?.value;

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { BrandLogo } from "@/components/brand-logo";
+import { BrandLogo } from "@/shared/ui/brand-logo";
 
 function UserIcon() {
   return (

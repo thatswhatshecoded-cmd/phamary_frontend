@@ -1,4 +1,4 @@
-import { backendRequest, backendUnavailable, relayJson } from "@/lib/backend";
+import { backendRequest, backendUnavailable, relayJson } from "@/shared/api/backend";
 
 export async function POST(request: Request) {
   try {

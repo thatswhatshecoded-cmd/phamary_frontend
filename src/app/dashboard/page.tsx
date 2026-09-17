@@ -1,11 +1,11 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { AppHeader } from "@/components/app-header";
+import { AppHeader } from "@/shared/layout/app-header";
 import {
   AUTH_COOKIE,
   type BackendPayload,
   backendRequest,
-} from "@/lib/backend";
+} from "@/shared/api/backend";
 
 type UserData = {
   id: number;
@@ -30,6 +30,13 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/");
 
+  const contextResponse = await backendRequest("v1/account/context", {
+    headers: { Authorization: `Bearer ${token}` },
+  }).catch(() => null);
+  if (!contextResponse?.ok) redirect("/");
+  const context = (await contextResponse.json()) as BackendPayload;
+  if (!context.data?.current) redirect("/onboarding");
+
   return (
     <main className="min-h-dvh bg-[#f4f8fb]">
       <AppHeader />
@@ -40,6 +47,7 @@ export default async function DashboardPage() {
           <p className="text-sm text-slate-500">Logged in mobile number</p>
           <p className="mt-2 text-xl font-semibold text-[#062f58]">+91 {user.mobile_number}</p>
           <p className="mt-5 text-sm text-emerald-700">Your OTP login was successful.</p>
+          <p className="mt-2 text-sm text-slate-600">Your pharmacy and plan access are managed securely by the backend.</p>
         </div>
       </section>
     </main>

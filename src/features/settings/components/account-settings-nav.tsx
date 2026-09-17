@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { accountSections } from "@/lib/pharmacy";
+import { accountSections } from "@/features/settings/config";
 
 function AccountIcon() {
   return (

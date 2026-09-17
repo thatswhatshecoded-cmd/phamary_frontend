@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { AUTH_COOKIE, backendRequest } from "@/lib/backend";
+import { AUTH_COOKIE, backendRequest } from "@/shared/api/backend";
 
 export async function POST() {
   const cookieStore = await cookies();

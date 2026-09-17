@@ -1,5 +1,5 @@
-import { BrandLogo } from "@/components/brand-logo";
-import { OtpLoginForm } from "@/components/otp-login-form";
+import { OtpLoginForm } from "@/features/auth/components/otp-login-form";
+import { BrandLogo } from "@/shared/ui/brand-logo";
 
 function SupportIcon() {
   return (

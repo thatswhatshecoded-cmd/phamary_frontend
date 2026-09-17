@@ -1,4 +1,4 @@
-import { relayAuthenticated } from "@/lib/auth-proxy";
+import { relayAuthenticated } from "@/shared/api/auth-proxy";
 
 export async function POST(request: Request) {
   return relayAuthenticated("v1/account/pharmacy/lookup/pan", {
