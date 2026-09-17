@@ -130,6 +130,7 @@ export function AboutPharmacyForm() {
   const [profile, setProfile] = useState<PharmacyProfile>(blankProfile);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [locating, setLocating] = useState(false);
   const [lookup, setLookup] = useState<"gstin" | "pan" | null>(null);
   const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -171,7 +172,12 @@ export function AboutPharmacyForm() {
       const payload = (await response.json()) as PharmacyPayload;
       if (!response.ok || !payload.data?.pharmacy) throw new Error(firstError(payload));
       setProfile({ ...blankProfile, ...payload.data.pharmacy });
-      setMessage({ text: payload.message, error: false });
+      setMessage({
+        text: profile.latitude && profile.longitude
+          ? "Pharmacy profile and location saved successfully."
+          : payload.message,
+        error: false,
+      });
     } catch (error) {
       setMessage({ text: error instanceof Error ? error.message : "Profile save nahi ho saki.", error: true });
     } finally {
@@ -218,6 +224,9 @@ export function AboutPharmacyForm() {
       setMessage({ text: "Is browser mein location available nahi hai.", error: true });
       return;
     }
+
+    setLocating(true);
+    setMessage({ text: "Location find ki ja rahi hai…", error: false });
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setProfile((current) => ({
@@ -225,9 +234,18 @@ export function AboutPharmacyForm() {
           latitude: position.coords.latitude.toFixed(7),
           longitude: position.coords.longitude.toFixed(7),
         }));
+        setLocating(false);
         setMessage({ text: "Current location add ho gayi. Save button dabayein.", error: false });
       },
-      () => setMessage({ text: "Location permission nahi mili.", error: true }),
+      (error) => {
+        setLocating(false);
+        const text = error.code === error.PERMISSION_DENIED
+          ? "Location permission deny hai. Browser settings se permission allow karke dobara Locate dabayein."
+          : error.code === error.TIMEOUT
+            ? "Location find karne mein timeout hua. Dobara Locate dabayein."
+            : "Current location nahi mil saki. Dobara Locate dabayein.";
+        setMessage({ text, error: true });
+      },
       { enableHighAccuracy: true, timeout: 10000 },
     );
   }
@@ -293,9 +311,9 @@ export function AboutPharmacyForm() {
           <div>
             <label className="mb-2 block text-sm font-medium text-[#0758a6]">Latitude–Longitude</label>
             <div className="flex items-end gap-3">
-              <input aria-label="Latitude" value={profile.latitude ?? ""} onChange={(event) => setField("latitude", event.target.value)} placeholder="Latitude" className="h-11 min-w-0 flex-1 border-0 border-b border-slate-300 px-1 text-sm outline-none focus:border-[#0799ed]" />
-              <input aria-label="Longitude" value={profile.longitude ?? ""} onChange={(event) => setField("longitude", event.target.value)} placeholder="Longitude" className="h-11 min-w-0 flex-1 border-0 border-b border-slate-300 px-1 text-sm outline-none focus:border-[#0799ed]" />
-              <button type="button" onClick={locate} className="h-10 shrink-0 bg-[#079ff0] px-4 text-sm font-semibold text-white hover:bg-[#0788cf]">⌖ Locate</button>
+              <input aria-label="Latitude" type="number" step="any" min="-90" max="90" value={profile.latitude ?? ""} onChange={(event) => setField("latitude", event.target.value)} placeholder="Latitude" className="h-11 min-w-0 flex-1 border-0 border-b border-slate-300 px-1 text-sm outline-none focus:border-[#0799ed]" />
+              <input aria-label="Longitude" type="number" step="any" min="-180" max="180" value={profile.longitude ?? ""} onChange={(event) => setField("longitude", event.target.value)} placeholder="Longitude" className="h-11 min-w-0 flex-1 border-0 border-b border-slate-300 px-1 text-sm outline-none focus:border-[#0799ed]" />
+              <button type="button" onClick={locate} disabled={locating} className="h-10 shrink-0 bg-[#079ff0] px-4 text-sm font-semibold text-white hover:bg-[#0788cf] disabled:cursor-wait disabled:opacity-60">{locating ? "Locating…" : "⌖ Locate"}</button>
             </div>
           </div>
           <TextField label="Address" value={profile.address_line_1} onChange={(value) => setField("address_line_1", value)} />
