@@ -251,13 +251,14 @@ export function AboutPharmacyForm() {
   }
 
   async function deleteAccount() {
-    if (deleteText !== "DELETE") return;
+    const confirmation = deleteText.trim().toUpperCase();
+    if (confirmation !== "DELETE") return;
     setDeleting(true);
     try {
       const response = await fetch("/api/account", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ confirmation: deleteText }),
+        body: JSON.stringify({ confirmation }),
       });
       const payload = (await response.json()) as PharmacyPayload;
       if (!response.ok) throw new Error(firstError(payload));
@@ -336,10 +337,19 @@ export function AboutPharmacyForm() {
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
             <h2 id="delete-title" className="text-xl font-semibold text-slate-900">Delete account permanently?</h2>
             <p className="mt-3 text-sm leading-6 text-slate-600">Type <strong>DELETE</strong> to confirm. This action cannot be undone.</p>
-            <input autoFocus value={deleteText} onChange={(event) => setDeleteText(event.target.value)} className="mt-4 h-11 w-full rounded border border-slate-300 px-3 outline-none focus:border-red-500" />
+            <input
+              autoFocus
+              aria-label="Delete confirmation"
+              value={deleteText}
+              onChange={(event) => setDeleteText(event.target.value.toUpperCase())}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && deleteText.trim().toUpperCase() === "DELETE") void deleteAccount();
+              }}
+              className="mt-4 h-11 w-full rounded border border-slate-300 px-3 uppercase outline-none focus:border-red-500"
+            />
             <div className="mt-6 flex justify-end gap-3">
               <button type="button" onClick={() => { setDeleteOpen(false); setDeleteText(""); }} className="rounded border border-slate-300 px-4 py-2 text-sm">Cancel</button>
-              <button type="button" disabled={deleteText !== "DELETE" || deleting} onClick={() => void deleteAccount()} className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-40">{deleting ? "Deleting…" : "Delete permanently"}</button>
+              <button type="button" disabled={deleteText.trim().toUpperCase() !== "DELETE" || deleting} onClick={() => void deleteAccount()} className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{deleting ? "Deleting…" : "Delete permanently"}</button>
             </div>
           </div>
         </div>
