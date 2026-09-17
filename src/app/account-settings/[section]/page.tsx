@@ -18,7 +18,7 @@ export default async function AccountSettingsSectionPage({
       <p className="text-xs font-semibold uppercase tracking-[.2em] text-[#0b8fea]">Account &amp; Settings</p>
       <h1 className="mt-3 text-3xl font-semibold text-[#063665]">{matched.label}</h1>
       <div className="mt-8 rounded-xl border border-dashed border-[#b7d9ef] bg-[#f4faff] p-8 text-slate-600">
-        {matched.label} ka section ready hai. Iski detailed fields aur workflow agle requirement ke saath isi Laravel API architecture par add honge.
+        The {matched.label.toLowerCase()} section is ready. Its detailed fields and workflow will be added to this Laravel API architecture as requirements are finalized.
       </div>
     </section>
   );

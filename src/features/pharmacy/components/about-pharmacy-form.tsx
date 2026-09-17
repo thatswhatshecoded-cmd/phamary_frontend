@@ -51,7 +51,7 @@ const GSTIN_PATTERN = /^[0-9]{2}[A-Z]{3}[ABCFGHLJPT][A-Z][0-9]{4}[A-Z][1-9A-Z]Z[
 
 function firstError(payload: PharmacyPayload): string {
   const validationError = payload.errors ? Object.values(payload.errors).flat()[0] : null;
-  return validationError ?? payload.message ?? "Request complete nahi ho saki.";
+  return validationError ?? payload.message ?? "The request could not be completed.";
 }
 
 function TextField({
@@ -146,7 +146,7 @@ export function AboutPharmacyForm() {
         if (active) setProfile({ ...blankProfile, ...payload.data.pharmacy });
       })
       .catch((error: unknown) => {
-        if (active) setMessage({ text: error instanceof Error ? error.message : "Profile load nahi ho saki.", error: true });
+        if (active) setMessage({ text: error instanceof Error ? error.message : "The profile could not be loaded.", error: true });
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -179,7 +179,7 @@ export function AboutPharmacyForm() {
         error: false,
       });
     } catch (error) {
-      setMessage({ text: error instanceof Error ? error.message : "Profile save nahi ho saki.", error: true });
+      setMessage({ text: error instanceof Error ? error.message : "The profile could not be saved.", error: true });
     } finally {
       setSaving(false);
     }
@@ -193,8 +193,8 @@ export function AboutPharmacyForm() {
     if (!valid) {
       setMessage({
         text: type === "gstin"
-          ? "GSTIN format valid nahi hai. Registered GSTIN enter karein."
-          : "Valid PAN enter karein.",
+          ? "The GSTIN format is invalid. Please enter a registered GSTIN."
+          : "Please enter a valid PAN.",
         error: true,
       });
       return;
@@ -213,7 +213,7 @@ export function AboutPharmacyForm() {
       setProfile((current) => ({ ...current, ...payload.data?.pharmacy, version: current.version }));
       setMessage({ text: payload.message, error: false });
     } catch (error) {
-      setMessage({ text: error instanceof Error ? error.message : "Details fetch nahi ho sakin.", error: true });
+      setMessage({ text: error instanceof Error ? error.message : "The details could not be fetched.", error: true });
     } finally {
       setLookup(null);
     }
@@ -221,12 +221,12 @@ export function AboutPharmacyForm() {
 
   function locate() {
     if (!navigator.geolocation) {
-      setMessage({ text: "Is browser mein location available nahi hai.", error: true });
+      setMessage({ text: "Location services are not available in this browser.", error: true });
       return;
     }
 
     setLocating(true);
-    setMessage({ text: "Location find ki ja rahi hai…", error: false });
+    setMessage({ text: "Finding your current location…", error: false });
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setProfile((current) => ({
@@ -235,15 +235,15 @@ export function AboutPharmacyForm() {
           longitude: position.coords.longitude.toFixed(7),
         }));
         setLocating(false);
-        setMessage({ text: "Current location add ho gayi. Save button dabayein.", error: false });
+        setMessage({ text: "Current location added. Click Save to store it.", error: false });
       },
       (error) => {
         setLocating(false);
         const text = error.code === error.PERMISSION_DENIED
-          ? "Location permission deny hai. Browser settings se permission allow karke dobara Locate dabayein."
-          : error.code === error.TIMEOUT
-            ? "Location find karne mein timeout hua. Dobara Locate dabayein."
-            : "Current location nahi mil saki. Dobara Locate dabayein.";
+          ? "Location permission was denied. Allow it in your browser settings and click Locate again."
+            : error.code === error.TIMEOUT
+            ? "Finding your location timed out. Click Locate again."
+            : "Your current location could not be found. Click Locate again.";
         setMessage({ text, error: true });
       },
       { enableHighAccuracy: true, timeout: 10000 },
@@ -264,7 +264,7 @@ export function AboutPharmacyForm() {
       router.replace("/");
       router.refresh();
     } catch (error) {
-      setMessage({ text: error instanceof Error ? error.message : "Account delete nahi ho saka.", error: true });
+      setMessage({ text: error instanceof Error ? error.message : "The account could not be deleted.", error: true });
       setDeleteOpen(false);
     } finally {
       setDeleting(false);
@@ -272,7 +272,7 @@ export function AboutPharmacyForm() {
   }
 
   if (loading) {
-    return <div className="grid min-h-[calc(100dvh-72px)] place-items-center text-[#0758a6]">Pharmacy profile load ho rahi hai…</div>;
+    return <div className="grid min-h-[calc(100dvh-72px)] place-items-center text-[#0758a6]">Loading pharmacy profile…</div>;
   }
 
   return (
@@ -305,7 +305,7 @@ export function AboutPharmacyForm() {
           <div>
             <div className="flex items-end">
               <div className="min-w-0 flex-1"><TextField label="Email" type="email" inputMode="email" value={profile.email} onChange={(value) => setField("email", value)} /></div>
-              <button type="button" onClick={() => setMessage({ text: "Email verification mail provider configure hone ke baad isi backend flow se enable hogi.", error: false })} className="h-9 bg-[#079ff0] px-6 text-sm font-semibold text-white hover:bg-[#0788cf]">{profile.email_verified ? "Verified" : "Verify"}</button>
+              <button type="button" onClick={() => setMessage({ text: "Email verification will be enabled after the mail provider is configured.", error: false })} className="h-9 bg-[#079ff0] px-6 text-sm font-semibold text-white hover:bg-[#0788cf]">{profile.email_verified ? "Verified" : "Verify"}</button>
             </div>
           </div>
           <div>
@@ -335,7 +335,7 @@ export function AboutPharmacyForm() {
         <div role="dialog" aria-modal="true" aria-labelledby="delete-title" className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
             <h2 id="delete-title" className="text-xl font-semibold text-slate-900">Delete account permanently?</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Confirm karne ke liye <strong>DELETE</strong> type karein. Ye action undo nahi hoga.</p>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Type <strong>DELETE</strong> to confirm. This action cannot be undone.</p>
             <input autoFocus value={deleteText} onChange={(event) => setDeleteText(event.target.value)} className="mt-4 h-11 w-full rounded border border-slate-300 px-3 outline-none focus:border-red-500" />
             <div className="mt-6 flex justify-end gap-3">
               <button type="button" onClick={() => { setDeleteOpen(false); setDeleteText(""); }} className="rounded border border-slate-300 px-4 py-2 text-sm">Cancel</button>
