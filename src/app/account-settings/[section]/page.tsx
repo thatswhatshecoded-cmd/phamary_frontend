@@ -6,6 +6,7 @@ import { DeleteAccountPage } from "@/features/settings/components/delete-account
 import { AgreementsPage } from "@/features/settings/components/agreements-page";
 import { PlanSettings } from "@/features/settings/components/plan-settings";
 import { PasswordSettings } from "@/features/settings/components/password-settings";
+import { KycSettings } from "@/features/settings/components/kyc-settings";
 import { accountSections } from "@/features/settings/config";
 
 export default async function AccountSettingsSectionPage({
@@ -22,6 +23,7 @@ export default async function AccountSettingsSectionPage({
   if (section === "security") return <SecuritySettings />;
   if (section === "plan") return <PlanSettings />;
   if (section === "password") return <PasswordSettings />;
+  if (section === "kyc-details") return <KycSettings />;
   if (section === "delete-account") return <DeleteAccountPage />;
   if (section === "agreements") return <AgreementsPage />;
 
