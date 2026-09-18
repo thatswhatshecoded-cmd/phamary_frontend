@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import type { PharmacyPayload, PharmacyProfile } from "@/features/pharmacy/types";
+import { LocationPickerModal } from "@/features/pharmacy/components/location-picker-modal";
 
 type EditableKey =
   | "pharmacy_name"
@@ -126,16 +126,12 @@ function LookupField({
 }
 
 export function AboutPharmacyForm() {
-  const router = useRouter();
   const [profile, setProfile] = useState<PharmacyProfile>(blankProfile);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [locating, setLocating] = useState(false);
+  const [locationPickerOpen, setLocationPickerOpen] = useState(false);
   const [lookup, setLookup] = useState<"gstin" | "pan" | null>(null);
   const [message, setMessage] = useState<{ text: string; error: boolean } | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteText, setDeleteText] = useState("");
-  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -219,57 +215,10 @@ export function AboutPharmacyForm() {
     }
   }
 
-  function locate() {
-    if (!navigator.geolocation) {
-      setMessage({ text: "Location services are not available in this browser.", error: true });
-      return;
-    }
-
-    setLocating(true);
-    setMessage({ text: "Finding your current location…", error: false });
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setProfile((current) => ({
-          ...current,
-          latitude: position.coords.latitude.toFixed(7),
-          longitude: position.coords.longitude.toFixed(7),
-        }));
-        setLocating(false);
-        setMessage({ text: "Current location added. Click Save to store it.", error: false });
-      },
-      (error) => {
-        setLocating(false);
-        const text = error.code === error.PERMISSION_DENIED
-          ? "Location permission was denied. Allow it in your browser settings and click Locate again."
-            : error.code === error.TIMEOUT
-            ? "Finding your location timed out. Click Locate again."
-            : "Your current location could not be found. Click Locate again.";
-        setMessage({ text, error: true });
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
-  }
-
-  async function deleteAccount() {
-    const confirmation = deleteText.trim().toUpperCase();
-    if (confirmation !== "DELETE") return;
-    setDeleting(true);
-    try {
-      const response = await fetch("/api/account", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ confirmation }),
-      });
-      const payload = (await response.json()) as PharmacyPayload;
-      if (!response.ok) throw new Error(firstError(payload));
-      router.replace("/");
-      router.refresh();
-    } catch (error) {
-      setMessage({ text: error instanceof Error ? error.message : "The account could not be deleted.", error: true });
-      setDeleteOpen(false);
-    } finally {
-      setDeleting(false);
-    }
+  function applyPickedLocation(coordinates: { latitude: string; longitude: string }) {
+    setProfile((current) => ({ ...current, ...coordinates }));
+    setLocationPickerOpen(false);
+    setMessage({ text: "Location selected. Click Save to store it.", error: false });
   }
 
   if (loading) {
@@ -314,7 +263,7 @@ export function AboutPharmacyForm() {
             <div className="flex items-end gap-3">
               <input aria-label="Latitude" type="number" step="any" min="-90" max="90" value={profile.latitude ?? ""} onChange={(event) => setField("latitude", event.target.value)} placeholder="Latitude" className="h-11 min-w-0 flex-1 border-0 border-b border-slate-300 px-1 text-sm outline-none focus:border-[#0799ed]" />
               <input aria-label="Longitude" type="number" step="any" min="-180" max="180" value={profile.longitude ?? ""} onChange={(event) => setField("longitude", event.target.value)} placeholder="Longitude" className="h-11 min-w-0 flex-1 border-0 border-b border-slate-300 px-1 text-sm outline-none focus:border-[#0799ed]" />
-              <button type="button" onClick={locate} disabled={locating} className="h-10 shrink-0 bg-[#079ff0] px-4 text-sm font-semibold text-white hover:bg-[#0788cf] disabled:cursor-wait disabled:opacity-60">{locating ? "Locating…" : "⌖ Locate"}</button>
+              <button type="button" onClick={() => setLocationPickerOpen(true)} className="h-10 shrink-0 bg-[#079ff0] px-4 text-sm font-semibold text-white hover:bg-[#0788cf]">⌖ Locate on map</button>
             </div>
           </div>
           <TextField label="Address" value={profile.address_line_1} onChange={(value) => setField("address_line_1", value)} />
@@ -327,33 +276,12 @@ export function AboutPharmacyForm() {
         </button>
       </form>
 
-      <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-lg border border-red-200 bg-red-50 px-5 py-4 sm:flex-row sm:items-center">
-        <div><p className="font-semibold text-red-800">Do you no longer need this account?</p><p className="mt-1 text-xs text-red-600">This permanently deletes your login and sole-owned pharmacy data.</p></div>
-        <button type="button" onClick={() => setDeleteOpen(true)} className="rounded bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600">Delete Account</button>
-      </div>
-
-      {deleteOpen && (
-        <div role="dialog" aria-modal="true" aria-labelledby="delete-title" className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-2xl">
-            <h2 id="delete-title" className="text-xl font-semibold text-slate-900">Delete account permanently?</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-600">Type <strong>DELETE</strong> to confirm. This action cannot be undone.</p>
-            <input
-              autoFocus
-              aria-label="Delete confirmation"
-              value={deleteText}
-              onChange={(event) => setDeleteText(event.target.value.toUpperCase())}
-              onKeyDown={(event) => {
-                if (event.key === "Enter" && deleteText.trim().toUpperCase() === "DELETE") void deleteAccount();
-              }}
-              className="mt-4 h-11 w-full rounded border border-slate-300 px-3 uppercase outline-none focus:border-red-500"
-            />
-            <div className="mt-6 flex justify-end gap-3">
-              <button type="button" onClick={() => { setDeleteOpen(false); setDeleteText(""); }} className="rounded border border-slate-300 px-4 py-2 text-sm">Cancel</button>
-              <button type="button" disabled={deleteText.trim().toUpperCase() !== "DELETE" || deleting} onClick={() => void deleteAccount()} className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">{deleting ? "Deleting…" : "Delete permanently"}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <LocationPickerModal
+        open={locationPickerOpen}
+        initialCoordinates={profile.latitude && profile.longitude ? { latitude: profile.latitude, longitude: profile.longitude } : null}
+        onClose={() => setLocationPickerOpen(false)}
+        onSubmit={applyPickedLocation}
+      />
     </section>
   );
 }

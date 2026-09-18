@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
 import { AboutPharmacyForm } from "@/features/pharmacy/components/about-pharmacy-form";
+import { DocumentsSettings } from "@/features/settings/components/documents-settings";
+import { SecuritySettings } from "@/features/settings/components/security-settings";
+import { DeleteAccountPage } from "@/features/settings/components/delete-account-page";
+import { AgreementsPage } from "@/features/settings/components/agreements-page";
 import { accountSections } from "@/features/settings/config";
 
 export default async function AccountSettingsSectionPage({
@@ -12,6 +16,10 @@ export default async function AccountSettingsSectionPage({
   if (!matched) notFound();
 
   if (section === "about-pharmacy") return <AboutPharmacyForm />;
+  if (section === "documents") return <DocumentsSettings />;
+  if (section === "security") return <SecuritySettings />;
+  if (section === "delete-account") return <DeleteAccountPage />;
+  if (section === "agreements") return <AgreementsPage />;
 
   return (
     <section className="mx-auto max-w-5xl px-5 py-10 sm:px-10 lg:px-14">
