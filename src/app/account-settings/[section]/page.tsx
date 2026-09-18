@@ -4,6 +4,7 @@ import { DocumentsSettings } from "@/features/settings/components/documents-sett
 import { SecuritySettings } from "@/features/settings/components/security-settings";
 import { DeleteAccountPage } from "@/features/settings/components/delete-account-page";
 import { AgreementsPage } from "@/features/settings/components/agreements-page";
+import { PlanSettings } from "@/features/settings/components/plan-settings";
 import { accountSections } from "@/features/settings/config";
 
 export default async function AccountSettingsSectionPage({
@@ -18,6 +19,7 @@ export default async function AccountSettingsSectionPage({
   if (section === "about-pharmacy") return <AboutPharmacyForm />;
   if (section === "documents") return <DocumentsSettings />;
   if (section === "security") return <SecuritySettings />;
+  if (section === "plan") return <PlanSettings />;
   if (section === "delete-account") return <DeleteAccountPage />;
   if (section === "agreements") return <AgreementsPage />;
 
