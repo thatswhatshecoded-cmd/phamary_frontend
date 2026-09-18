@@ -26,3 +26,41 @@ input {
 button {
   cursor: pointer;
 }
+
+@keyframes location-picker-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes location-picker-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.location-picker-backdrop {
+  animation: location-picker-backdrop-in 180ms ease-out both;
+}
+
+.location-picker-panel {
+  animation: location-picker-panel-in 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center bottom;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-picker-backdrop,
+  .location-picker-panel {
+    animation: none;
+  }
+}

@@ -161,8 +161,8 @@ export function LocationPickerModal({ open, initialCoordinates, onClose, onSubmi
   if (!open) return null;
 
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby="location-picker-title" className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4">
-      <div className="w-full max-w-[720px] overflow-hidden rounded-xl bg-white shadow-2xl">
+    <div role="dialog" aria-modal="true" aria-labelledby="location-picker-title" className="location-picker-backdrop fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4">
+      <div className="location-picker-panel w-full max-w-[720px] overflow-hidden rounded-xl bg-white shadow-2xl">
         <div className="flex items-center justify-between bg-[#0758a6] px-5 py-3 text-white">
           <h2 id="location-picker-title" className="text-base font-semibold">Drag the 📍 to choose the precise location</h2>
           <button type="button" aria-label="Close location picker" onClick={onClose} className="px-2 text-2xl leading-none hover:text-cyan-200">×</button>
