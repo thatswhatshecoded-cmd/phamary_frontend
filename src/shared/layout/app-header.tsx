@@ -13,6 +13,22 @@ function UserIcon() {
   );
 }
 
+function HomeIcon() {
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="currentColor"><path d="m3 10.7 9-7.2 9 7.2v9.8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20.5v-9.8Zm5.5 9.8h7v-5.8h-7v5.8Z" /></svg>;
+}
+
+function PlusIcon() {
+  return <span aria-hidden="true" className="grid size-6 place-items-center rounded-full bg-[#18bcae] text-[22px] font-light leading-none text-white">+</span>;
+}
+
+function BoxIcon() {
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="size-6" fill="currentColor"><path d="m12 2.5 9 4.8v9.4l-9 4.8-9-4.8V7.3l9-4.8Zm0 2.3L6.2 8l5.8 3 5.8-3L12 4.8Zm-7 4.8v5.7l5.8 3.1v-5.8L5 9.6Zm8.2 8.8 5.8-3.1V9.6l-5.8 3v5.8Z" /></svg>;
+}
+
+function BookIcon() {
+  return <svg aria-hidden="true" viewBox="0 0 24 24" className="size-7" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M4 4.5c2.8-.5 5.5.2 8 2.1v13c-2.5-1.9-5.2-2.6-8-2.1v-13ZM20 4.5c-2.8-.5-5.5.2-8 2.1v13c2.5-1.9 5.2-2.6 8-2.1v-13Z" /></svg>;
+}
+
 function GearIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none">
@@ -42,10 +58,20 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="relative z-40 flex h-[72px] items-center justify-between border-b border-white/10 bg-[#0758a6] px-4 shadow-sm sm:px-8">
-      <Link href="/dashboard" aria-label="Go to dashboard" className="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+    <header className="relative z-40 flex min-h-[80px] items-center justify-between gap-4 border-b border-white/10 bg-[#003f35] px-4 text-white shadow-[0_2px_8px_rgba(0,0,0,.12)] sm:px-8 lg:px-10">
+      <Link href="/dashboard" aria-label="Go to dashboard" className="shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
         <BrandLogo />
       </Link>
+
+      <nav aria-label="Primary navigation" className="hidden flex-1 items-center justify-center gap-7 xl:flex">
+        <Link href="/dashboard" className="flex items-center gap-2 text-[22px] font-medium tracking-[-.3px] transition-colors hover:text-[#5ce4d7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"><HomeIcon /> Home</Link>
+        <Link href="/dashboard" className="flex items-center gap-2 text-[22px] font-medium tracking-[-.3px] transition-colors hover:text-[#5ce4d7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"><PlusIcon /> Sales</Link>
+        <Link href="/dashboard" className="flex items-center gap-2 text-[22px] font-medium tracking-[-.3px] transition-colors hover:text-[#5ce4d7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"><PlusIcon /> Purchase</Link>
+        <Link href="/dashboard" className="flex items-center gap-2 text-[22px] font-medium tracking-[-.3px] transition-colors hover:text-[#5ce4d7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"><BoxIcon /> Inventory</Link>
+        <Link href="/dashboard" className="flex items-center gap-2 text-[22px] font-medium tracking-[-.3px] transition-colors hover:text-[#5ce4d7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"><BookIcon /> Medbook</Link>
+        <button type="button" className="flex items-center gap-2 text-[22px] font-medium tracking-[-.3px] transition-colors hover:text-[#5ce4d7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">More <svg aria-hidden="true" viewBox="0 0 20 20" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m4 7 6 6 6-6" /></svg></button>
+      </nav>
+
       <div ref={menuRef} className="relative">
         <button
           type="button"
@@ -53,7 +79,7 @@ export function AppHeader() {
           aria-haspopup="menu"
           aria-expanded={open}
           onClick={() => setOpen((current) => !current)}
-          className="flex h-[52px] items-center gap-2 rounded-md border border-white/35 bg-[#084b8a] px-3 text-white transition hover:bg-[#063f75] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+          className="flex h-[52px] items-center gap-2 rounded-md border border-white/55 bg-white/10 px-3 text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
         >
           <span className="grid size-9 place-items-center rounded-full border border-white/50 bg-white/10"><UserIcon /></span>
           <svg aria-hidden="true" viewBox="0 0 20 20" className={`size-4 transition ${open ? "rotate-180" : ""}`} fill="currentColor">
@@ -66,9 +92,9 @@ export function AppHeader() {
               role="menuitem"
               href="/account-settings/about-pharmacy"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-4 px-6 py-5 text-[16px] font-medium text-slate-800 transition hover:bg-[#f2f8fd] focus:bg-[#f2f8fd] focus:outline-none"
+              className="flex items-center gap-4 px-6 py-5 text-[16px] font-medium text-slate-800 transition hover:bg-[#eefaf8] focus:bg-[#eefaf8] focus:outline-none"
             >
-              <span className="text-[#0758a6]"><GearIcon /></span>
+              <span className="text-[#007b70]"><GearIcon /></span>
               Account &amp; Settings
             </Link>
           </div>
