@@ -58,9 +58,30 @@ button {
   transform-origin: center bottom;
 }
 
+@keyframes documents-modal-backdrop-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes documents-modal-panel-in {
+  from { opacity: 0; transform: translateY(34px) scale(.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.documents-modal-backdrop {
+  animation: documents-modal-backdrop-in 220ms ease-out both;
+}
+
+.documents-modal-panel {
+  animation: documents-modal-panel-in 420ms cubic-bezier(.22, 1, .36, 1) both;
+  transform-origin: center bottom;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .location-picker-backdrop,
-  .location-picker-panel {
+  .location-picker-panel,
+  .documents-modal-backdrop,
+  .documents-modal-panel {
     animation: none;
   }
 }
