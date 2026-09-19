@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { BrandLogo } from "@/shared/ui/brand-logo";
 
 function UserIcon() {
   return (
@@ -59,9 +58,7 @@ export function AppHeader() {
 
   return (
     <header className="relative z-40 flex min-h-[80px] items-center justify-between gap-4 border-b border-white/10 bg-[#00362B] px-4 text-white shadow-[0_2px_8px_rgba(0,0,0,.12)] sm:px-8 lg:px-10">
-      <Link href="/dashboard" aria-label="Go to dashboard" className="shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-        <BrandLogo showName={false} />
-      </Link>
+      <div aria-hidden="true" className="shrink-0" />
 
       <nav aria-label="Primary navigation" className="hidden flex-1 items-center justify-center gap-7 xl:flex">
         <Link href="/dashboard" className="flex items-center gap-2 text-[22px] font-medium tracking-[-.3px] transition-colors hover:text-[#5ce4d7] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"><HomeIcon /> Home</Link>
