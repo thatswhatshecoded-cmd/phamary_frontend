@@ -95,16 +95,21 @@ export function DocumentsSettings() {
   const [adding, setAdding] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [addForm, setAddForm] = useState<AddLicenseForm>({ licenseType: "Other License", number: "", expiry: "", file: null });
+  const [editFile, setEditFile] = useState<File | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
 
   useEffect(() => {
-    if (!addModalOpen) return;
-    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape" && !adding) setAddModalOpen(false); };
+    if (!addModalOpen && editing === null) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || adding || saving !== null) return;
+      if (addModalOpen) setAddModalOpen(false);
+      else if (editing !== null) cancelEdit(editing);
+    };
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKeyDown);
     return () => { document.body.style.overflow = previousOverflow; window.removeEventListener("keydown", onKeyDown); };
-  }, [addModalOpen, adding]);
+  }, [addModalOpen, adding, editing, saving]);
 
   const loadDocuments = useCallback(async () => {
     setLoading(true);
@@ -143,6 +148,7 @@ export function DocumentsSettings() {
       return;
     }
     setOriginalValues({ number: license.number, expiry: license.expiry });
+    setEditFile(null);
     setEditing(license.id);
     setNotice(null);
   }
@@ -153,7 +159,14 @@ export function DocumentsSettings() {
     }
     setEditing(null);
     setOriginalValues(null);
+    setEditFile(null);
     setNotice(null);
+  }
+
+  async function saveEditModal(license: License) {
+    await saveLicense(license);
+    if (editFile && editing === null) await uploadDocument(license.id, editFile);
+    setEditFile(null);
   }
 
   async function saveLicense(license: License) {
@@ -283,7 +296,7 @@ export function DocumentsSettings() {
             <label>License Expiry Date<input type="date" value={license.expiry} onChange={(event) => update(license.id, "expiry", event.target.value)} disabled={!isEditing || isSaving} className="mt-2 h-8 w-full border-b border-slate-300 bg-transparent px-1 text-slate-700 outline-none focus:border-[#0799ed] disabled:cursor-default disabled:text-slate-500" /></label>
             <label title={license.fileName ?? undefined} className={`grid h-[50px] place-items-center border border-dashed border-[#b8d8ec] px-2 text-center text-xs ${isUploading ? "cursor-wait bg-slate-50 text-slate-500" : "cursor-pointer text-slate-500 hover:border-[#079ff0] hover:text-[#0758a6]"}`}><input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" disabled={isUploading} onChange={(event) => { const input = event.currentTarget; void uploadDocument(license.id, input.files?.[0]).finally(() => { input.value = ""; }); }} className="sr-only" />{isUploading ? "Uploading…" : license.file ? "Replace" : "Upload"}</label>
             <a aria-label={`Download ${license.name}`} title={license.fileName ? `Download ${license.fileName}` : "No document uploaded"} href={license.file ? `/api/account/documents/${license.id}/download` : undefined} className={`grid size-9 place-items-center bg-slate-300 text-white ${!license.file ? "pointer-events-none opacity-60" : "hover:bg-slate-400"}`}><DownloadIcon /></a>
-            {isEditing ? <div className="flex gap-2"><button type="button" disabled={isSaving} onClick={() => void saveLicense(license)} className="h-9 rounded bg-[#0758a6] px-3 text-xs font-semibold text-white hover:bg-[#06447f] disabled:opacity-60">{isSaving ? "…" : "Save"}</button><button type="button" disabled={isSaving} onClick={() => cancelEdit(license.id)} className="h-9 rounded border border-slate-300 px-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-60">Cancel</button></div> : <button type="button" aria-label={`Edit ${license.name}`} onClick={() => beginEdit(license)} className="grid size-9 place-items-center bg-[#0758a6] text-white hover:bg-[#06447f]"><EditIcon /></button>}
+            <button type="button" aria-label={`Edit ${license.name}`} onClick={() => beginEdit(license)} className="grid size-9 place-items-center bg-[#0758a6] text-white hover:bg-[#06447f]"><EditIcon /></button>
           </div>;
         })}
       </div>
@@ -322,6 +335,44 @@ export function DocumentsSettings() {
           </form>
         </div>
       </div>}
+
+      {editing !== null && (() => {
+        const license = licenses.find((item) => item.id === editing);
+        if (!license) return null;
+        const isSaving = saving === license.id;
+        return <div className="documents-modal-backdrop fixed inset-0 z-50 grid place-items-center bg-slate-950/35 px-4 py-8" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !isSaving) cancelEdit(license.id); }}>
+          <div className="documents-modal-panel w-full max-w-[600px] overflow-hidden rounded-[3px] bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="edit-license-title">
+            <div className="flex items-center justify-between bg-[#0758a6] px-5 py-3 text-white">
+              <h2 id="edit-license-title" className="text-[18px] font-semibold">Edit {license.name}</h2>
+              <button type="button" aria-label="Close" disabled={isSaving} onClick={() => cancelEdit(license.id)} className="text-3xl font-light leading-none hover:text-sky-200 disabled:opacity-50">×</button>
+            </div>
+            <form onSubmit={(event) => { event.preventDefault(); void saveEditModal(license); }} className="grid gap-7 px-7 py-7 sm:grid-cols-2">
+              <div className="space-y-7">
+                <label className="block text-[14px] text-[#0758a6]">License Name
+                  <input value={license.name} disabled className="mt-2 h-10 w-full border border-slate-200 bg-slate-50 px-3 text-sm text-slate-600" />
+                </label>
+                <label className="block text-[14px] text-[#0758a6]">License Number
+                  <input value={license.number} maxLength={120} onChange={(event) => update(license.id, "number", event.target.value)} disabled={isSaving} className="mt-2 h-9 w-full border-0 border-b border-slate-300 px-1 text-sm text-slate-700 outline-none focus:border-[#0799ed]" />
+                </label>
+                <label className="block text-[14px] text-[#0758a6]">License Expiry Date
+                  <input type="date" value={license.expiry} onChange={(event) => update(license.id, "expiry", event.target.value)} disabled={isSaving} className="mt-2 h-9 w-full border-0 border-b border-slate-300 px-1 text-sm text-slate-700 outline-none focus:border-[#0799ed]" />
+                </label>
+              </div>
+              <label className="block text-[14px] text-[#0758a6]">Upload License
+                <span className={`mt-2 grid h-[112px] cursor-pointer place-items-center border border-dashed border-[#b8d8ec] text-center text-4xl font-light text-[#079ff0] hover:border-[#079ff0] ${isSaving ? "cursor-wait opacity-60" : ""}`}>
+                  <input type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" disabled={isSaving} onChange={(event) => setEditFile(event.target.files?.[0] ?? null)} className="sr-only" />
+                  <span aria-hidden="true">{editFile ? "✓" : "+"}</span>
+                </span>
+                <span className="mt-2 block truncate text-xs text-slate-500">{editFile?.name ?? license.fileName ?? "PDF, JPG, JPEG or PNG · max 5 MB"}</span>
+              </label>
+              <div className="flex justify-end gap-3 sm:col-span-2">
+                <button type="button" disabled={isSaving} onClick={() => cancelEdit(license.id)} className="rounded border border-slate-300 px-5 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50">Cancel</button>
+                <button type="submit" disabled={isSaving} className="rounded bg-[#079ff0] px-6 py-2 text-sm font-semibold text-white hover:bg-[#0788cf] disabled:cursor-wait disabled:opacity-60">{isSaving ? "Saving…" : "Save"}</button>
+              </div>
+            </form>
+          </div>
+        </div>;
+      })()}
     </section>
   );
 }
