@@ -58,9 +58,9 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="relative z-40 flex min-h-[80px] items-center justify-between gap-4 border-b border-white/10 bg-[#003f35] px-4 text-white shadow-[0_2px_8px_rgba(0,0,0,.12)] sm:px-8 lg:px-10">
+    <header className="relative z-40 flex min-h-[80px] items-center justify-between gap-4 border-b border-white/10 bg-[#00362B] px-4 text-white shadow-[0_2px_8px_rgba(0,0,0,.12)] sm:px-8 lg:px-10">
       <Link href="/dashboard" aria-label="Go to dashboard" className="shrink-0 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
-        <BrandLogo />
+        <BrandLogo showName={false} />
       </Link>
 
       <nav aria-label="Primary navigation" className="hidden flex-1 items-center justify-center gap-7 xl:flex">
